@@ -1,0 +1,29 @@
+{
+	"name": "DS_BLOB_SNOWFLAKE_PARQUET_INPUT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BLOB_SNOWFLAKE_PARQUET_INPUT",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FolderType": {
+				"type": "string",
+				"defaultValue": "@pipeline().parameters.FolderType"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+					"type": "Expression"
+				},
+				"container": "input"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

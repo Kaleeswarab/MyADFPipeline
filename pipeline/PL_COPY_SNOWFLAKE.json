@@ -37,7 +37,7 @@
 					"sink": {
 						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings"
@@ -53,14 +53,13 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_CSV_Parquet_Processed_ADF",
+						"referenceName": "DS_BLOB_SNOWFLAKE_PARQUET_INPUT",
 						"type": "DatasetReference",
 						"parameters": {
-							"Trigger": {
-								"value": "@pipeline().parameters.Trigger",
+							"FolderType": {
+								"value": "@pipeline().parameters.FolderType",
 								"type": "Expression"
-							},
-							"FolderType": "@pipeline().parameters.FolderType"
+							}
 						}
 					}
 				]
