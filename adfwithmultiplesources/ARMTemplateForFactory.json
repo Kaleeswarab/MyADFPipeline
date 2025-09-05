@@ -73,6 +73,110 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "COPY_BLOB_TO_ADLS",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().parameters.FolderType",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*.parquet",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_BLOB_SNOWFLAKE_PARQUET_INPUT",
+								"type": "DatasetReference",
+								"parameters": {
+									"FolderType": {
+										"value": "@pipeline().parameters.FolderType",
+										"type": "Expression"
+									},
+									"EventTrigger": "Fire Trigger"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_CSV_Parquet_Processed_ADF",
+								"type": "DatasetReference",
+								"parameters": {
+									"Trigger": "@pipeline().parameters.Trigger",
+									"FolderType": "@pipeline().parameters.FolderType",
+									"EventTrigger": "FireTrigger"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"FolderType": {
+						"type": "string",
+						"defaultValue": "snowflake"
+					},
+					"Trigger": {
+						"type": "string",
+						"defaultValue": "snowflake"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "FireTrigger"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_BLOB_SNOWFLAKE_PARQUET_INPUT')]",
+				"[concat(variables('factoryId'), '/datasets/DS_CSV_Parquet_Processed_ADF')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_CLOUDSG_AZURE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1548,7 +1652,7 @@
 									]
 								},
 								{
-									"value": "snowflake1",
+									"value": "snowflake",
 									"activities": [
 										{
 											"name": "EXEC_SNOWFLAKE",
@@ -1677,6 +1781,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -1685,7 +1793,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": {
-							"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"container": "input"
@@ -1748,6 +1856,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -1756,7 +1868,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
-							"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"fileSystem": "transformed"

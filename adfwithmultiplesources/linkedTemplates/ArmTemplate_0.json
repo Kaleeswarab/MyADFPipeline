@@ -219,6 +219,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -227,7 +231,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": {
-							"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"container": "input"
@@ -290,6 +294,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -298,7 +306,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
-							"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"fileSystem": "transformed"
@@ -490,6 +498,110 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_SNOWFLAKE_INPUT_ADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "COPY_BLOB_TO_ADLS",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().parameters.FolderType",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*.parquet",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_BLOB_SNOWFLAKE_PARQUET_INPUT",
+								"type": "DatasetReference",
+								"parameters": {
+									"FolderType": {
+										"value": "@pipeline().parameters.FolderType",
+										"type": "Expression"
+									},
+									"EventTrigger": "Fire Trigger"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_CSV_Parquet_Processed_ADF",
+								"type": "DatasetReference",
+								"parameters": {
+									"Trigger": "@pipeline().parameters.Trigger",
+									"FolderType": "@pipeline().parameters.FolderType",
+									"EventTrigger": "FireTrigger"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"FolderType": {
+						"type": "string",
+						"defaultValue": "snowflake"
+					},
+					"Trigger": {
+						"type": "string",
+						"defaultValue": "snowflake"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "FireTrigger"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_BLOB_SNOWFLAKE_PARQUET_INPUT')]",
+				"[concat(variables('factoryId'), '/datasets/DS_CSV_Parquet_Processed_ADF')]"
 			]
 		},
 		{
@@ -1770,224 +1882,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_AZ_SQL_Input')]",
 				"[concat(variables('factoryId'), '/pipelines/PL_CLOUDSG_AZURE_CSV_EXCEL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_RAW_DATA')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LOOKUP_SQL_TRIGGER_DB",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "SELECT DISTINCT L2_switch_type \r\nFROM dbo.vb_tbl_job a\r\nJOIN dbo.vb_tbl_trigger b ON a.trigger_id = b.trigger_id\r\nWHERE b.trigger_name = '@{pipeline().parameters.Trigger}'",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_AZ_SQL_Input",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "Switch_Source",
-						"type": "Switch",
-						"dependsOn": [
-							{
-								"activity": "LOOKUP_SQL_TRIGGER_DB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"on": {
-								"value": "@activity('LOOKUP_SQL_TRIGGER_DB').output.firstRow.L2_switch_type ",
-								"type": "Expression"
-							},
-							"cases": [
-								{
-									"value": "CloudStorage",
-									"activities": [
-										{
-											"name": "Execute_Azure_Cloud_Storage_CSV_EXCEL",
-											"type": "ExecutePipeline",
-											"dependsOn": [],
-											"policy": {
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"pipeline": {
-													"referenceName": "PL_CLOUDSG_AZURE",
-													"type": "PipelineReference"
-												},
-												"waitOnCompletion": true,
-												"parameters": {
-													"Trigger": {
-														"value": "@pipeline().parameters.Trigger",
-														"type": "Expression"
-													}
-												}
-											}
-										}
-									]
-								},
-								{
-									"value": "API",
-									"activities": [
-										{
-											"name": "Wait2",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								},
-								{
-									"value": "sql",
-									"activities": [
-										{
-											"name": "Wait3",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								},
-								{
-									"value": "sftp",
-									"activities": [
-										{
-											"name": "Wait4",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								},
-								{
-									"value": "snowflake1",
-									"activities": [
-										{
-											"name": "EXEC_SNOWFLAKE",
-											"type": "ExecutePipeline",
-											"dependsOn": [],
-											"policy": {
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"pipeline": {
-													"referenceName": "PL_COPY_SNOWFLAKE",
-													"type": "PipelineReference"
-												},
-												"waitOnCompletion": true,
-												"parameters": {
-													"Trigger": {
-														"value": "@pipeline().parameters.Trigger",
-														"type": "Expression"
-													},
-													"FolderType": {
-														"value": "@activity('LOOKUP_SQL_TRIGGER_DB').output.firstRow.L2_switch_type",
-														"type": "Expression"
-													}
-												}
-											}
-										}
-									]
-								},
-								{
-									"value": "json",
-									"activities": [
-										{
-											"name": "Wait6",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								},
-								{
-									"value": "bulk",
-									"activities": [
-										{
-											"name": "Wait7",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								}
-							],
-							"defaultActivities": [
-								{
-									"name": "Wait1",
-									"type": "Wait",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"waitTimeInSeconds": 1
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"Trigger": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"Mapping": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"lastPublishTime": "2025-09-04T15:07:57Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_AZ_SQL_Input')]",
-				"[concat(variables('factoryId'), '/pipelines/PL_CLOUDSG_AZURE')]",
-				"[concat(variables('factoryId'), '/pipelines/PL_COPY_SNOWFLAKE')]"
 			]
 		}
 	]
