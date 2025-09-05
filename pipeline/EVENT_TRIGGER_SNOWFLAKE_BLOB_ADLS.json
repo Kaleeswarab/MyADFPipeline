@@ -1,0 +1,92 @@
+{
+	"name": "EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS",
+	"properties": {
+		"activities": [
+			{
+				"name": "COPY_BLOB_TO_ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": "@pipeline().parameters.FolderType",
+							"wildcardFileName": "*.parquet",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_BLOB_SNOWFLAKE_PARQUET_INPUT",
+						"type": "DatasetReference",
+						"parameters": {
+							"FolderType": {
+								"value": "@pipeline().parameters.FolderType",
+								"type": "Expression"
+							},
+							"EventTrigger": "Fire Trigger"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_Parquet_Processed_ADF",
+						"type": "DatasetReference",
+						"parameters": {
+							"Trigger": "@pipeline().parameters.Trigger",
+							"FolderType": "@pipeline().parameters.FolderType",
+							"EventTrigger": "FireTrigger"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"FolderType": {
+				"type": "string",
+				"defaultValue": "snowflake"
+			},
+			"Trigger": {
+				"type": "string",
+				"defaultValue": "snowflake"
+			},
+			"EventTrigger": {
+				"type": "string",
+				"defaultValue": "FireTrigger"
+			}
+		},
+		"annotations": []
+	}
+}

@@ -13,6 +13,10 @@
 			"FolderType": {
 				"type": "string",
 				"defaultValue": "@pipeline().parameters.FolderType"
+			},
+			"EventTrigger": {
+				"type": "string",
+				"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 			}
 		},
 		"annotations": [],
@@ -21,7 +25,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+					"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 					"type": "Expression"
 				},
 				"fileSystem": "transformed"
