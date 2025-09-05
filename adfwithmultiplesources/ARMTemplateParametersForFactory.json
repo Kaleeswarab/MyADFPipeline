@@ -49,6 +49,18 @@
 		},
 		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
 			"value": "NXDWZOC-RE09043.snowflakecomputing.com"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType": {
+			"value": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger": {
+			"value": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger": {
+			"value": "FireTrigger"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope": {
+			"value": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob"
 		}
 	}
 }

@@ -67,6 +67,22 @@
 			"type": "string",
 			"defaultValue": "NXDWZOC-RE09043.snowflakecomputing.com"
 		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger": {
+			"type": "string",
+			"defaultValue": "FireTrigger"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -138,6 +154,18 @@
 					},
 					"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
 						"value": "[parameters('LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host')]"
+					},
+					"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType": {
+						"value": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType')]"
+					},
+					"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger": {
+						"value": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger')]"
+					},
+					"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger": {
+						"value": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger')]"
+					},
+					"EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope": {
+						"value": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope')]"
 					}
 				}
 			},

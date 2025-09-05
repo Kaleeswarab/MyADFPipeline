@@ -66,6 +66,22 @@
 		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "NXDWZOC-RE09043.snowflakecomputing.com"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger": {
+			"type": "string",
+			"defaultValue": "FireTrigger"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob"
 		}
 	},
 	"variables": {
@@ -290,6 +306,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -298,7 +318,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
-							"value": "concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"fileSystem": "transformed"
@@ -564,7 +584,11 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"Trigger": "@pipeline().parameters.Trigger",
-									"FolderType": "@pipeline().parameters.FolderType"
+									"FolderType": "@pipeline().parameters.FolderType",
+									"EventTrigger": {
+										"value": "@if(empty(pipeline().parameters.EventTrigger),'','Fire Trigger')",
+										"type": "Expression"
+									}
 								}
 							}
 						]
@@ -1744,134 +1768,39 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_CLOUDSG_AZURE')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/EVENT_TRIGGER_FOR_BLOB')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
 					{
-						"name": "LKUP_SRC_CLOUD",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+						"pipelineReference": {
+							"referenceName": "EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS",
+							"type": "PipelineReference"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "SELECT DISTINCT L3_switch_type \nFROM dbo.vb_tbl_job a\nJOIN dbo.vb_tbl_trigger b ON a.trigger_id = b.trigger_id\nWHERE b.trigger_name = '@{pipeline().parameters.Trigger}'",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_AZ_SQL_Input",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": true
-						}
-					},
-					{
-						"name": "Switch_SRC_AZURE_AWS_GCP",
-						"type": "Switch",
-						"dependsOn": [
-							{
-								"activity": "LKUP_SRC_CLOUD",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"on": {
-								"value": "@activity('LKUP_SRC_CLOUD').output.firstRow.L3_switch_type",
-								"type": "Expression"
-							},
-							"cases": [
-								{
-									"value": "Azure",
-									"activities": [
-										{
-											"name": "EXEC_COPY_CSV",
-											"type": "ExecutePipeline",
-											"dependsOn": [],
-											"policy": {
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"pipeline": {
-													"referenceName": "PL_CLOUDSG_AZURE_CSV_EXCEL",
-													"type": "PipelineReference"
-												},
-												"waitOnCompletion": true,
-												"parameters": {
-													"Trigger": {
-														"value": "@pipeline().parameters.Trigger",
-														"type": "Expression"
-													}
-												}
-											}
-										}
-									]
-								},
-								{
-									"value": "Aws",
-									"activities": [
-										{
-											"name": "Wait2",
-											"type": "Wait",
-											"dependsOn": [],
-											"userProperties": [],
-											"typeProperties": {
-												"waitTimeInSeconds": 1
-											}
-										}
-									]
-								}
-							],
-							"defaultActivities": [
-								{
-									"name": "Wait1",
-									"type": "Wait",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"waitTimeInSeconds": 1
-									}
-								}
-							]
+						"parameters": {
+							"FolderType": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType')]",
+							"Trigger": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger')]",
+							"EventTrigger": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger')]"
 						}
 					}
 				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"Trigger": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"Mapping": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"lastPublishTime": "2025-09-04T15:46:06Z"
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/input/blobs/",
+					"blobPathEndsWith": "*.parquet",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated",
+						"Microsoft.Storage.BlobDeleted"
+					]
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_AZ_SQL_Input')]",
-				"[concat(variables('factoryId'), '/pipelines/PL_CLOUDSG_AZURE_CSV_EXCEL')]"
+				"[concat(variables('factoryId'), '/pipelines/EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS')]"
 			]
 		}
 	]

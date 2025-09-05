@@ -66,6 +66,22 @@
 		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "NXDWZOC-RE09043.snowflakecomputing.com"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger": {
+			"type": "string",
+			"defaultValue": "snowflake"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger": {
+			"type": "string",
+			"defaultValue": "FireTrigger"
+		},
+		"EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob"
 		}
 	},
 	"variables": {
@@ -144,7 +160,11 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"Trigger": "@pipeline().parameters.Trigger",
-									"FolderType": "@pipeline().parameters.FolderType"
+									"FolderType": "@pipeline().parameters.FolderType",
+									"EventTrigger": {
+										"value": "@if(empty(pipeline().parameters.EventTrigger),'','Fire Trigger')",
+										"type": "Expression"
+									}
 								}
 							}
 						]
@@ -1850,6 +1870,10 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
+					},
+					"EventTrigger": {
+						"type": "string",
+						"defaultValue": "@if(empty(pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -1858,7 +1882,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
-							"value": "concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
 							"type": "Expression"
 						},
 						"fileSystem": "transformed"
@@ -2164,6 +2188,42 @@
 				"version": "1.1"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EVENT_TRIGGER_FOR_BLOB')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"FolderType": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_FolderType')]",
+							"Trigger": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_Trigger')]",
+							"EventTrigger": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS_parameters_EventTrigger')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/input/blobs/",
+					"blobPathEndsWith": "*.parquet",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('EVENT_TRIGGER_FOR_BLOB_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated",
+						"Microsoft.Storage.BlobDeleted"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS')]"
+			]
 		}
 	]
 }
