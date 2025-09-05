@@ -1,0 +1,9 @@
+{
+	"name": "adfwithmultiplesources",
+	"location": "eastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "8ebf3be6-79ff-4b8f-9644-ac605f90c5fe",
+		"tenantId": "d42a83bc-746d-472d-b2ee-6191d70434b3"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "DS_AZ_SQL_Input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AZ_SQL_Input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vb_tbl_job"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

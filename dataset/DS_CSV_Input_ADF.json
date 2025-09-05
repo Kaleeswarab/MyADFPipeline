@@ -1,0 +1,29 @@
+{
+	"name": "DS_CSV_Input_ADF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_CSV_Input_ADF",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Trigger": {
+				"type": "string",
+				"defaultValue": "@pipeline().parameters.Trigger"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

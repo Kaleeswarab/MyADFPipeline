@@ -1,0 +1,60 @@
+{
+	"name": "DS_EXCEL_Input_ADF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_CSV_Input_ADF",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Trigger": {
+				"type": "string",
+				"defaultValue": "@pipeline().parameters.Trigger"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().Trigger",
+					"type": "Expression"
+				},
+				"fileSystem": "input"
+			},
+			"sheetIndex": 0,
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "review_id",
+				"type": "String"
+			},
+			{
+				"name": "order_id",
+				"type": "String"
+			},
+			{
+				"name": "review_score",
+				"type": "String"
+			},
+			{
+				"name": "review_comment_title",
+				"type": "String"
+			},
+			{
+				"name": "review_comment_message",
+				"type": "String"
+			},
+			{
+				"name": "review_creation_date",
+				"type": "String"
+			},
+			{
+				"name": "review_answer_timestamp",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

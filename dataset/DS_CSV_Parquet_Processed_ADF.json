@@ -1,0 +1,34 @@
+{
+	"name": "DS_CSV_Parquet_Processed_ADF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_CSV_Parquet_Processed_ADF",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Trigger": {
+				"type": "string",
+				"defaultValue": "@pipeline().parameters.Trigger"
+			},
+			"FolderType": {
+				"type": "string",
+				"defaultValue": "@pipeline().parameters.FolderType"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
+					"type": "Expression"
+				},
+				"fileSystem": "transformed"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
