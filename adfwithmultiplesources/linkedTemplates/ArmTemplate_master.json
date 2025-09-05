@@ -1,0 +1,167 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfwithmultiplesources"
+		},
+		"DS_SFTP_Input_ADF_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'DS_SFTP_Input_ADF'"
+		},
+		"LS_AZ_SQL_Input_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_AZ_SQL_Input'"
+		},
+		"LS_CSV_Input_ADF_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_CSV_Input_ADF'"
+		},
+		"LS_CSV_Parquet_Processed_ADF_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_CSV_Parquet_Processed_ADF'"
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SNOWFLAKE_INPUT_ADF'"
+		},
+		"DS_SFTP_Input_ADF_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "staccforinputadfsftp.blob.core.windows.net"
+		},
+		"DS_SFTP_Input_ADF_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "staccforinputadfsftp.sftpuser"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-svr-kl-dev.database.windows.net"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sql-db-kl-dev"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "access-data-dev"
+		},
+		"LS_BLOB_SNOWFLAKE_PARQUET_INPUT_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'LS_BLOB_SNOWFLAKE_PARQUET_INPUT'"
+		},
+		"LS_CSV_Input_ADF_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storageaccadfinput.dfs.core.windows.net/"
+		},
+		"LS_CSV_Parquet_Processed_ADF_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://staccforprocessedadfdata.dfs.core.windows.net/"
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "DBAZURESNOW"
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "NXDWZOC-RE09043.snowflakecomputing.com"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adfwithmultiplesources_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"DS_SFTP_Input_ADF_password": {
+						"value": "[parameters('DS_SFTP_Input_ADF_password')]"
+					},
+					"LS_AZ_SQL_Input_password": {
+						"value": "[parameters('LS_AZ_SQL_Input_password')]"
+					},
+					"LS_CSV_Input_ADF_accountKey": {
+						"value": "[parameters('LS_CSV_Input_ADF_accountKey')]"
+					},
+					"LS_CSV_Parquet_Processed_ADF_accountKey": {
+						"value": "[parameters('LS_CSV_Parquet_Processed_ADF_accountKey')]"
+					},
+					"LS_SNOWFLAKE_INPUT_ADF_password": {
+						"value": "[parameters('LS_SNOWFLAKE_INPUT_ADF_password')]"
+					},
+					"DS_SFTP_Input_ADF_properties_typeProperties_host": {
+						"value": "[parameters('DS_SFTP_Input_ADF_properties_typeProperties_host')]"
+					},
+					"DS_SFTP_Input_ADF_properties_typeProperties_userName": {
+						"value": "[parameters('DS_SFTP_Input_ADF_properties_typeProperties_userName')]"
+					},
+					"LS_AZ_SQL_Input_properties_typeProperties_server": {
+						"value": "[parameters('LS_AZ_SQL_Input_properties_typeProperties_server')]"
+					},
+					"LS_AZ_SQL_Input_properties_typeProperties_database": {
+						"value": "[parameters('LS_AZ_SQL_Input_properties_typeProperties_database')]"
+					},
+					"LS_AZ_SQL_Input_properties_typeProperties_userName": {
+						"value": "[parameters('LS_AZ_SQL_Input_properties_typeProperties_userName')]"
+					},
+					"LS_BLOB_SNOWFLAKE_PARQUET_INPUT_sasUri": {
+						"value": "[parameters('LS_BLOB_SNOWFLAKE_PARQUET_INPUT_sasUri')]"
+					},
+					"LS_CSV_Input_ADF_properties_typeProperties_url": {
+						"value": "[parameters('LS_CSV_Input_ADF_properties_typeProperties_url')]"
+					},
+					"LS_CSV_Parquet_Processed_ADF_properties_typeProperties_url": {
+						"value": "[parameters('LS_CSV_Parquet_Processed_ADF_properties_typeProperties_url')]"
+					},
+					"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_database": {
+						"value": "[parameters('LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_database')]"
+					},
+					"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
+						"value": "[parameters('LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adfwithmultiplesources_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adfwithmultiplesources_ArmTemplate_0')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfwithmultiplesources"
+		},
+		"DS_SFTP_Input_ADF_password": {
+			"value": ""
+		},
+		"LS_AZ_SQL_Input_password": {
+			"value": ""
+		},
+		"LS_CSV_Input_ADF_accountKey": {
+			"value": ""
+		},
+		"LS_CSV_Parquet_Processed_ADF_accountKey": {
+			"value": ""
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_password": {
+			"value": ""
+		},
+		"DS_SFTP_Input_ADF_properties_typeProperties_host": {
+			"value": "staccforinputadfsftp.blob.core.windows.net"
+		},
+		"DS_SFTP_Input_ADF_properties_typeProperties_userName": {
+			"value": "staccforinputadfsftp.sftpuser"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_server": {
+			"value": "sql-svr-kl-dev.database.windows.net"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_database": {
+			"value": "sql-db-kl-dev"
+		},
+		"LS_AZ_SQL_Input_properties_typeProperties_userName": {
+			"value": "access-data-dev"
+		},
+		"LS_BLOB_SNOWFLAKE_PARQUET_INPUT_sasUri": {
+			"value": ""
+		},
+		"LS_CSV_Input_ADF_properties_typeProperties_url": {
+			"value": "https://storageaccadfinput.dfs.core.windows.net/"
+		},
+		"LS_CSV_Parquet_Processed_ADF_properties_typeProperties_url": {
+			"value": "https://staccforprocessedadfdata.dfs.core.windows.net/"
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_database": {
+			"value": "DBAZURESNOW"
+		},
+		"LS_SNOWFLAKE_INPUT_ADF_properties_typeProperties_host": {
+			"value": "NXDWZOC-RE09043.snowflakecomputing.com"
+		}
+	}
+}
