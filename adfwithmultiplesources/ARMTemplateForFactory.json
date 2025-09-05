@@ -134,8 +134,7 @@
 									"FolderType": {
 										"value": "@pipeline().parameters.FolderType",
 										"type": "Expression"
-									},
-									"EventTrigger": "Fire Trigger"
+									}
 								}
 							}
 						],
@@ -145,8 +144,7 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"Trigger": "@pipeline().parameters.Trigger",
-									"FolderType": "@pipeline().parameters.FolderType",
-									"EventTrigger": "FireTrigger"
+									"FolderType": "@pipeline().parameters.FolderType"
 								}
 							}
 						]
@@ -1781,10 +1779,6 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
-					},
-					"EventTrigger": {
-						"type": "string",
-						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -1793,7 +1787,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": {
-							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
+							"value": "concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
 							"type": "Expression"
 						},
 						"container": "input"
@@ -1856,10 +1850,6 @@
 					"FolderType": {
 						"type": "string",
 						"defaultValue": "@pipeline().parameters.FolderType"
-					},
-					"EventTrigger": {
-						"type": "string",
-						"defaultValue": "@if(empty(@pipeline().parameters.EventTrigger),'','Fire Trigger')"
 					}
 				},
 				"annotations": [],
@@ -1868,7 +1858,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": {
-							"value": "@if(empty(dataset().EventTrigger),\nconcat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n),\ndataset().FolderType)",
+							"value": "concat(\n    dataset().FolderType,\n    '/',\n    formatDateTime(utcNow(),'yyyy'),'/',\n    formatDateTime(utcNow(),'MM'),'/',\n    formatDateTime(utcNow(),'dd')\n)",
 							"type": "Expression"
 						},
 						"fileSystem": "transformed"
