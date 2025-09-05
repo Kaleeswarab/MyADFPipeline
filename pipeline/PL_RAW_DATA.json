@@ -121,12 +121,29 @@
 							"value": "snowflake1",
 							"activities": [
 								{
-									"name": "Wait5",
-									"type": "Wait",
+									"name": "EXEC_SNOWFLAKE",
+									"type": "ExecutePipeline",
 									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
-										"waitTimeInSeconds": 1
+										"pipeline": {
+											"referenceName": "PL_COPY_SNOWFLAKE",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"Trigger": {
+												"value": "@pipeline().parameters.Trigger",
+												"type": "Expression"
+											},
+											"FolderType": {
+												"value": "@activity('LOOKUP_SQL_TRIGGER_DB').output.firstRow.L2_switch_type",
+												"type": "Expression"
+											}
+										}
 									}
 								}
 							]
