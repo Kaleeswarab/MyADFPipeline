@@ -118,7 +118,7 @@
 							]
 						},
 						{
-							"value": "snowflake1",
+							"value": "snowflake",
 							"activities": [
 								{
 									"name": "EXEC_SNOWFLAKE",
