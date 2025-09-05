@@ -2,7 +2,7 @@
 	"name": "EVENT_TRIGGER_FOR_BLOB",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
