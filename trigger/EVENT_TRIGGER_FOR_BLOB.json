@@ -19,7 +19,6 @@
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
 			"blobPathBeginsWith": "/input/blobs/",
-			"blobPathEndsWith": "*.parquet",
 			"ignoreEmptyBlobs": true,
 			"scope": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob",
 			"events": [
