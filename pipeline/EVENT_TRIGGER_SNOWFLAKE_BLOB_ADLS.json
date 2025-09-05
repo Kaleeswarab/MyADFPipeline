@@ -68,7 +68,11 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Trigger": "@pipeline().parameters.Trigger",
-							"FolderType": "@pipeline().parameters.FolderType"
+							"FolderType": "@pipeline().parameters.FolderType",
+							"EventTrigger": {
+								"value": "@if(empty(pipeline().parameters.EventTrigger),'','Fire Trigger')",
+								"type": "Expression"
+							}
 						}
 					}
 				]

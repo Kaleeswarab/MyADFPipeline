@@ -1,0 +1,31 @@
+{
+	"name": "EVENT_TRIGGER_FOR_BLOB",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "EVENT_TRIGGER_SNOWFLAKE_BLOB_ADLS",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"FolderType": "snowflake",
+					"Trigger": "snowflake",
+					"EventTrigger": "FireTrigger"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/input/blobs/",
+			"blobPathEndsWith": "*.parquet",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/feeb8a48-49b5-42b6-aae4-33218c38ae74/resourceGroups/adfmultiplesources/providers/Microsoft.Storage/storageAccounts/staccinputsflakeblob",
+			"events": [
+				"Microsoft.Storage.BlobCreated",
+				"Microsoft.Storage.BlobDeleted"
+			]
+		}
+	}
+}
